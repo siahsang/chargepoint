@@ -1,6 +1,6 @@
 ## Required tools
 
-To build and run, make sure that you have Java and Maven installed on your system. The following items are required:
+To build and run, make sure that you have Java and Docker installed on your system. The following items are required:
 
 - Java Development Kit (JDK 21)
 - Docker 
