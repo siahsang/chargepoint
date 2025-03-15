@@ -35,7 +35,7 @@ class ExceptionTranslator : ResponseEntityExceptionHandler() {
      */
     @ExceptionHandler(ChargeInfoInvalidException::class)
     @ResponseBody
-    fun handleEmailInvalidException(
+    fun handleChargeInfoInvalidException(
         request: HttpServletRequest,
         response: HttpServletResponse,
         chargeInfoInvalidException: ChargeInfoInvalidException
