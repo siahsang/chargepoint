@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service
 /**
  * Sending charge session events to a RabbitMQ queue.
  *
- * @property topic The name of the RabbitMQ queue to send messages to.
+ * @property queueName The name of the RabbitMQ queue to send messages to.
  * @property rabbitTemplate The RabbitTemplate used for sending messages.
  */
 @Service
 class RabbitChargeEventSenderImpl(
     @Value("\${chargepoint.charge-session-queue.name}")
-    private val topic: String,
+    private val queueName: String,
     private val rabbitTemplate: RabbitTemplate
 ) : EventSender<ChargeSessionEvent> {
 
@@ -25,6 +25,6 @@ class RabbitChargeEventSenderImpl(
      * @param payload The charge session event to send.
      */
     override fun send(payload: ChargeSessionEvent) {
-        rabbitTemplate.convertAndSend(topic, payload.toJson())
+        rabbitTemplate.convertAndSend(queueName, payload.toJson())
     }
 }
