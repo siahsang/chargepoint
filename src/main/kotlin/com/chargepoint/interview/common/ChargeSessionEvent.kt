@@ -6,9 +6,11 @@ package com.chargepoint.interview.common
  * @property stationId The identifier of the station where the charge session is taking place.
  * @property driverToken The token of the driver involved in the charge session.
  * @property callbackURL The URL to call back with the result of the charge session.
+ * @property startSessionTimestamp The timestamp of the charge session event.
  */
 data class ChargeSessionEvent(
     val stationId: String,
     val driverToken: String,
-    val callbackURL: String
+    val callbackURL: String,
+    val startSessionTimestamp: Long
 )

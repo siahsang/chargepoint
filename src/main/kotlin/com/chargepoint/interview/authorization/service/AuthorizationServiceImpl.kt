@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.RestTemplate
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.TimeUnit
+import java.time.Duration
+import java.time.Instant
 
 /**
  * Service implementation for authorizing charge sessions.
@@ -38,18 +38,17 @@ class AuthorizationServiceImpl(
      * @param driverToken The token of the driver requesting authorization.
      * @param stationId The identifier of the station where the charge session is taking place.
      * @param callBackUrl The URL to call back with the authorization result.
+     * @param startSessionTimestamp The timestamp of the charge session event.
      */
     @Transactional(readOnly = true)
-    override fun authorize(driverToken: String, stationId: String, callBackUrl: String) {
+    override fun authorize(driverToken: String, stationId: String, callBackUrl: String, startSessionTimestamp: Long) {
         log.info { "Authorizing request: station-id $stationId, driver-token: $driverToken, callback: $callBackUrl" }
 
-        val checkAuthorizationStatus = CompletableFuture.supplyAsync {
-            getAuthorizationStatus(driverToken = driverToken, stationId = stationId)
-        }.completeOnTimeout(
-            AuthorizationStatus.UNKNOWN,
-            authorizationTimeOut,
-            TimeUnit.MILLISECONDS
-        ).join()
+        val checkAuthorizationStatus = if (isSessionExpired(startSessionTimestamp)) {
+            AuthorizationStatus.UNKNOWN
+        } else {
+            getAuthorizationStatus(driverToken, stationId)
+        }
 
         aclAuditService.auditACL(
             driverToken = driverToken,
@@ -94,5 +93,12 @@ class AuthorizationServiceImpl(
     private fun notifyClient(callBackUrl: String, callbackPayload: CallbackPayload) {
         log.info { "Notifying the callback ${callBackUrl} about the result of the decision" }
         restTemplate.put(callBackUrl, callbackPayload.toJson())
+    }
+
+    private fun isSessionExpired(startSessionTimestamp: Long): Boolean {
+        val startTimestamp = Instant.ofEpochMilli(startSessionTimestamp)
+        val currentTimeStamp = Instant.ofEpochMilli(System.currentTimeMillis())
+
+        return Duration.between(startTimestamp, currentTimeStamp).toMillis() > authorizationTimeOut
     }
 }

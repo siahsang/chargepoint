@@ -46,7 +46,8 @@ class RabbitChargeEventReceiverImpl(val authorizationService: AuthorizationServi
         authorizationService.authorize(
             driverToken = event.driverToken,
             stationId = event.stationId,
-            callBackUrl = event.callbackURL
+            callBackUrl = event.callbackURL,
+            startSessionTimestamp = event.startSessionTimestamp
         )
     }
 

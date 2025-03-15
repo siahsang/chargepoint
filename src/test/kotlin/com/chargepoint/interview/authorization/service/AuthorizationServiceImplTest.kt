@@ -44,7 +44,12 @@ class AuthorizationServiceImplTest {
             )
         ).thenReturn(Optional.of(ACLEntity(stationId = stationId, driverToken = driverToken, isAllowed = true)))
 
-        authorizationServiceImpl.authorize(driverToken = driverToken, stationId = stationId, callBackUrl = callbackURL)
+        authorizationServiceImpl.authorize(
+            driverToken = driverToken,
+            stationId = stationId,
+            callBackUrl = callbackURL,
+            startSessionTimestamp = System.currentTimeMillis()
+        )
 
         //************************
         //          THEN
@@ -90,7 +95,12 @@ class AuthorizationServiceImplTest {
         //************************
         //         WHEN
         //************************
-        authorizationServiceImpl.authorize(driverToken = driverToken, stationId = stationId, callBackUrl = callbackURL)
+        authorizationServiceImpl.authorize(
+            driverToken = driverToken,
+            stationId = stationId,
+            callBackUrl = callbackURL,
+            startSessionTimestamp = System.currentTimeMillis()
+        )
 
         //************************
         //         THEN

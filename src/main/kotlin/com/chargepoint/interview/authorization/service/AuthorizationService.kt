@@ -10,6 +10,7 @@ interface AuthorizationService {
      * @param driverToken The token of the driver requesting authorization.
      * @param stationId The identifier of the station where the charge session is taking place.
      * @param callBackUrl The URL to call back with the authorization result.
+     * @param startSessionTimestamp The timestamp of the charge session event.
      */
-    fun authorize(driverToken: String, stationId: String, callBackUrl: String)
+    fun authorize(driverToken: String, stationId: String, callBackUrl: String, startSessionTimestamp: Long)
 }

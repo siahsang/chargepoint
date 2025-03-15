@@ -43,7 +43,8 @@ class DispatcherServiceImpl(private val eventSender: EventSender<ChargeSessionEv
                 ChargeSessionEvent(
                     driverToken = driverToken,
                     stationId = stationId,
-                    callbackURL = callbackURL
+                    callbackURL = callbackURL,
+                    startSessionTimestamp = System.currentTimeMillis()
                 )
             )
             log.info { "Dispatched request for driverToken: $driverToken, stationId: $stationId with status: ${DispatcherStatus.ACCEPTED}" }

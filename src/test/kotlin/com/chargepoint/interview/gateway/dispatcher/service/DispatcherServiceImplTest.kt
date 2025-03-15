@@ -7,6 +7,7 @@ import com.chargepoint.interview.gateway.dispatcher.service.producer.EventSender
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.mock
 
 class DispatcherServiceImplTest {
@@ -25,17 +26,24 @@ class DispatcherServiceImplTest {
         //************************
         //          WHEN
         //************************
+        val startTime = System.currentTimeMillis()
         val dispatcherStatus = dispatcherServiceImpl.dispatchRequest(
             stationId = stationId,
             driverToken = driverToken,
             callbackURL = callbackURL
         )
+        val endTime = System.currentTimeMillis()
         //************************
         //          THEN
         //************************
         Assertions.assertThat(dispatcherStatus).isEqualTo(DispatcherStatus.ACCEPTED)
         Mockito.verify(eventSenderMock).send(
-            ChargeSessionEvent(stationId = stationId, driverToken = driverToken, callbackURL = callbackURL)
+            argThat { event: ChargeSessionEvent ->
+                event.stationId == stationId &&
+                        event.driverToken == driverToken &&
+                        event.callbackURL == callbackURL &&
+                        event.startSessionTimestamp in startTime..endTime
+            }
         )
 
     }
@@ -85,7 +93,11 @@ class DispatcherServiceImplTest {
         )
         Assertions.assertThat(dispatcherStatus).isEqualTo(DispatcherStatus.ACCEPTED)
         Mockito.verify(eventSenderMock).send(
-            ChargeSessionEvent(stationId = stationId, driverToken = driverToken, callbackURL = callbackURL)
+            argThat { event: ChargeSessionEvent ->
+                event.stationId == stationId &&
+                        event.driverToken == driverToken &&
+                        event.callbackURL == callbackURL
+            }
         )
     }
 
