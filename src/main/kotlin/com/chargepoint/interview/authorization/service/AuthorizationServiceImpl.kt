@@ -99,6 +99,6 @@ class AuthorizationServiceImpl(
         val startTimestamp = Instant.ofEpochMilli(startSessionTimestamp)
         val currentTimeStamp = Instant.ofEpochMilli(System.currentTimeMillis())
 
-        return Duration.between(startTimestamp, currentTimeStamp).toMillis() > authorizationTimeOut
+        return Duration.between(startTimestamp, currentTimeStamp).toMillis() >= authorizationTimeOut
     }
 }

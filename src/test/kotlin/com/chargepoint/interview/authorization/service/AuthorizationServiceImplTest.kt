@@ -6,7 +6,6 @@ import com.chargepoint.interview.authorization.dto.CallbackPayload
 import com.chargepoint.interview.authorization.repository.ACLEntityRepository
 import com.chargepoint.interview.common.toJson
 import org.junit.jupiter.api.Test
-import org.mockito.AdditionalAnswers
 import org.mockito.Mockito
 import org.mockito.kotlin.mock
 import org.springframework.web.client.RestTemplate
@@ -17,9 +16,10 @@ class AuthorizationServiceImplTest {
     private val aclAuditServiceMock = mock<ACLAuditService>()
     private val aclEntityRepositoryMock = mock<ACLEntityRepository>()
     private val restTemplateMock = mock<RestTemplate>()
+    private val authorizationTimeOut = 1000L
 
     private val authorizationServiceImpl = AuthorizationServiceImpl(
-        authorizationTimeOut = 1000,
+        authorizationTimeOut = authorizationTimeOut,
         aclAuditService = aclAuditServiceMock,
         aclEntityRepository = aclEntityRepositoryMock,
         restTemplate = restTemplateMock
@@ -79,27 +79,15 @@ class AuthorizationServiceImplTest {
         val driverToken = "token_driver_test_123"
         val callbackURL = "http://127.0.0.1:8080/test"
 
-        Mockito.`when`(
-            aclEntityRepositoryMock.findByStationIdAndDriverToken(
-                stationId = stationId,
-                driverToken = driverToken
-            )
-        ).thenAnswer(
-            AdditionalAnswers.answersWithDelay(
-                2000, {
-                    Optional.of(ACLEntity(stationId = stationId, driverToken = driverToken, isAllowed = true))
-                }
-            )
-        )
-
         //************************
         //         WHEN
         //************************
+        val startSessionTimestamp = System.currentTimeMillis() - authorizationTimeOut - 20
         authorizationServiceImpl.authorize(
             driverToken = driverToken,
             stationId = stationId,
             callBackUrl = callbackURL,
-            startSessionTimestamp = System.currentTimeMillis()
+            startSessionTimestamp = startSessionTimestamp
         )
 
         //************************
